@@ -49,7 +49,7 @@ struct file_content read_entire_file(char *filename)
 		struct stat input_file_stat = {0};
 		stat(filename, &input_file_stat);
 		file_size = input_file_stat.st_size;
-		file_data = mmap(0, file_size, PROT_READ | PROT_WRITE, MAP_PRIVATE, input_file_fd, 0);
+		file_data = mmap(0, file_size, PROT_READ, MAP_PRIVATE, input_file_fd, 0);
 		close(input_file_fd);
 	}
 	return (struct file_content){file_data, file_size};
@@ -57,14 +57,12 @@ struct file_content read_entire_file(char *filename)
 
 struct message_info {
 	u8 *pixels;
-	// u32 header_pos;
 	u32 msg_len;
 	u32 msg_start;
 	u32 width;
 };
 
 u32 find_header_start(u8 *data, u32 size, u32 offset, u32 width) {
-	(void) width;
 	for (u32 i = offset; i < size; i += 4) {
 		if (
 			data[i] == 127 && data[i + 1] == 188 && data[i + 2] == 217 &&
@@ -105,7 +103,6 @@ void print_msg(struct message_info msg_info) {
 		write(STDOUT_FILENO, msg_info.pixels + pos, msg_info.msg_len - chars_read);
 	}
 }
-
 
 int main(int argc, char **argv)
 {
