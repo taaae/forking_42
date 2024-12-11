@@ -1,0 +1,5 @@
+*.bmp
+decoder
+*.out
+.vscode
+.DS_Store
