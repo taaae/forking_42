@@ -63,25 +63,42 @@ struct message_info {
 };
 
 u32 find_header_start(u8 *data, u32 size, u32 offset, u32 width) {
-	for (u32 i = offset; i < size; i += 4) {
+	(void) width;
+	for (u32 j = offset; j < size; j += 4 * 7) {
 		if (
-			data[i] == 127 && data[i + 1] == 188 && data[i + 2] == 217 &&
-			data[i + 4] == 127 && data[i + 5] == 188 && data[i + 6] == 217 &&
-			data[i + 8] == 127 && data[i + 9] == 188 && data[i + 10] == 217 &&
-			data[i + 12] == 127 && data[i + 13] == 188 && data[i + 14] == 217 &&
-			data[i + 16] == 127 && data[i + 17] == 188 && data[i + 18] == 217 &&
-			data[i + 20] == 127 && data[i + 21] == 188 && data[i + 22] == 217 &&
-			data[i + 24] == 127 && data[i + 25] == 188 && data[i + 26] == 217
-			&& data[i - width * 4] == 127 && data[i - width * 4 + 1] == 188 && data[i - width * 4 + 2] == 217
-			&& data[i - width * 4 * 2] == 127 && data[i - width * 4 * 2 + 1] == 188 && data[i - width * 4 * 2 + 2] == 217
-			&& data[i - width * 4 * 3] == 127 && data[i - width * 4 * 3 + 1] == 188 && data[i - width * 4 * 3 + 2] == 217
-			&& data[i - width * 4 * 4] == 127 && data[i - width * 4 * 4 + 1] == 188 && data[i - width * 4 * 4 + 2] == 217
-			&& data[i - width * 4 * 5] == 127 && data[i - width * 4 * 5 + 1] == 188 && data[i - width * 4 * 5 + 2] == 217
-			&& data[i - width * 4 * 6] == 127 && data[i - width * 4 * 6 + 1] == 188 && data[i - width * 4 * 6 + 2] == 217
-			&& data[i - width * 4 * 7] == 127 && data[i - width * 4 * 7 + 1] == 188 && data[i - width * 4 * 7 + 2] == 217
+			data[j] == 127 && data[j + 1] == 188 && data[j + 2] == 217
 		) {
-			return i;
+			for (u32 i = j - 4; i < j + 4; i += 4) {
+				if (data[i] == 127 && data[i + 1] == 188 && data[i + 2] == 217 &&
+					data[i + 4] == 127 && data[i + 5] == 188 && data[i + 6] == 217 &&
+				data[i + 8] == 127 && data[i + 9] == 188 && data[i + 10] == 217 &&
+				data[i + 12] == 127 && data[i + 13] == 188 && data[i + 14] == 217 &&
+				data[i + 16] == 127 && data[i + 17] == 188 && data[i + 18] == 217 &&
+				data[i + 20] == 127 && data[i + 21] == 188 && data[i + 22] == 217 &&
+				data[i + 24] == 127 && data[i + 25] == 188 && data[i + 26] == 217)  {
+					return i;
+				} else {
+					continue;
+				}
+			}
 		}
+		// 	data[i + 4] == 127 && data[i + 5] == 188 && data[i + 6] == 217 &&
+		// 	data[i + 8] == 127 && data[i + 9] == 188 && data[i + 10] == 217 &&
+		// 	data[i + 12] == 127 && data[i + 13] == 188 && data[i + 14] == 217 &&
+		// 	data[i + 16] == 127 && data[i + 17] == 188 && data[i + 18] == 217 &&
+		// 	data[i + 20] == 127 && data[i + 21] == 188 && data[i + 22] == 217 &&
+		// 	data[i + 24] == 127 && data[i + 25] == 188 && data[i + 26] == 217
+		// 	&& data[i - width * 4] == 127 && data[i - width * 4 + 1] == 188 && data[i - width * 4 + 2] == 217
+		// 	&& data[i - width * 4 * 2] == 127 && data[i - width * 4 * 2 + 1] == 188 && data[i - width * 4 * 2 + 2] == 217
+		// 	&& data[i - width * 4 * 3] == 127 && data[i - width * 4 * 3 + 1] == 188 && data[i - width * 4 * 3 + 2] == 217
+		// 	&& data[i - width * 4 * 4] == 127 && data[i - width * 4 * 4 + 1] == 188 && data[i - width * 4 * 4 + 2] == 217
+		// 	&& data[i - width * 4 * 5] == 127 && data[i - width * 4 * 5 + 1] == 188 && data[i - width * 4 * 5 + 2] == 217
+		// 	&& data[i - width * 4 * 6] == 127 && data[i - width * 4 * 6 + 1] == 188 && data[i - width * 4 * 6 + 2] == 217
+		// 	&& data[i - width * 4 * 7] == 127 && data[i - width * 4 * 7 + 1] == 188 && data[i - width * 4 * 7 + 2] == 217
+		// ) 
+		// {
+		// 	return i;
+		// }
 	}
 	return 0;
 }
