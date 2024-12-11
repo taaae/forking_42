@@ -55,6 +55,8 @@ struct file_content read_entire_file(char *filename)
 	return (struct file_content){file_data, file_size};
 }
 
+
+
 int main(int argc, char **argv)
 {
 	if (argc != 2)
@@ -72,23 +74,32 @@ int main(int argc, char **argv)
 	printf("signature: %.2s\nfile_size: %u\ndata_offset: %u\ninfo_header_size: %u\nwidth: %u\nheight: %u\nplanes: %i\nbit_per_px: %i\ncompression_type: %u\ncompression_size: %u\n", header->signature, header->file_size, header->data_offset, header->info_header_size, header->width, header->height, header->number_of_planes, header->bit_per_pixel, header->compression_type, header->compressed_image_size);
 	// i8 *pixels = file_content.data + header->data_offset;
 	u8 *pixels = (u8*)file_content.data;
-	// for (u32 i = header->data_offset; i < file_content.size; i += 4) {
-	// 	u8 blue = file_content.data[i];
-	// 	u8 green = file_content.data[i + 1];
-	// 	u8 red = file_content.data[i + 2];
-	// 	if (blue == 127 && green == 188 && red == 217) {
-	// 		printf("found: %u\n", i);
-	// 	}
-	// }
-	u32 msg_len_pos = 4074562 + 4;
+	for (u32 i = header->data_offset; i < file_content.size; i += 4) {
+		u8 blue = file_content.data[i];
+		u8 green = file_content.data[i + 1];
+		u8 red = file_content.data[i + 2];
+		if (blue == 127 && green == 188 && red == 217) {
+			printf("found: %u\n", i);
+		}
+	}
+	// u32 msg_len_pos = 4074562 + 4;
+	u32 msg_len_pos = 48290162 + 4;
 	u32 msg_len = pixels[msg_len_pos] + pixels[msg_len_pos + 2];
 	printf("len: %u\n", msg_len);
 
-	u32 first_pos = 4059178 + 8;
-	for (u32 pos = first_pos; pos < first_pos + msg_len * 4; pos += 1) {
-		if (pixels[pos]) {
-			printf("%c", pixels[pos]);
+	u32 pos = 48257946 + 8;
+	u32 pixel_msg_len = (msg_len + 2) / 3;
+	for (u32 i = 0; i < pixel_msg_len; i++) {
+		write(STDOUT_FILENO, pixels + pos, 1);
+		write(STDOUT_FILENO, pixels + pos + 1, 1);
+		write(STDOUT_FILENO, pixels + pos + 2, 1);
+		if (i % 6 == 5) {
+			pos -= header->width * 4;
+			pos -= 5 * 4;
+		} else {
+			pos += 1 * 4;
 		}
 	}
 	return 0;
 }
+
