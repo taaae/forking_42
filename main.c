@@ -64,7 +64,7 @@ struct message_info {
 
 u32 find_header_start(u8 *data, u32 size, u32 offset, u32 width) {
 	(void) width;
-	for (u32 j = offset; j < size; j += 4 * 7) {
+	for (u32 j = offset; j < size; j += 4 * 5) {
 		if (
 			data[j] == 127 && data[j + 1] == 188 && data[j + 2] == 217
 		) {
