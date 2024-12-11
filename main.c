@@ -55,6 +55,31 @@ struct file_content read_entire_file(char *filename)
 	return (struct file_content){file_data, file_size};
 }
 
+struct message_info {
+	u8 *pixels;
+	// u32 header_pos;
+	u32 msg_len;
+	u32 msg_start;
+	u32 width;
+};
+
+// struct message_info get_msg_info() {
+	// maybe juts take position of the header (finding header is the most complex part)
+// } 
+
+void print_msg(struct message_info msg_info) {
+	u32 pos = msg_info.msg_start;
+	u32 chars_read = 0;
+	while (chars_read - msg_info.msg_len >= 3) {
+		write(STDOUT_FILENO, msg_info.pixels + pos, 3);
+		chars_read += 3;
+		pos += 4;
+		if (chars_read % 18 == 0) {
+			pos -= msg_info.width * 4;
+			pos -= 6 * 4;
+		}
+	}
+}
 
 
 int main(int argc, char **argv)
@@ -72,8 +97,6 @@ int main(int argc, char **argv)
 	}
 	struct bmp_header *header = (struct bmp_header *)file_content.data;
 	printf("signature: %.2s\nfile_size: %u\ndata_offset: %u\ninfo_header_size: %u\nwidth: %u\nheight: %u\nplanes: %i\nbit_per_px: %i\ncompression_type: %u\ncompression_size: %u\n", header->signature, header->file_size, header->data_offset, header->info_header_size, header->width, header->height, header->number_of_planes, header->bit_per_pixel, header->compression_type, header->compressed_image_size);
-	// i8 *pixels = file_content.data + header->data_offset;
-	u8 *pixels = (u8*)file_content.data;
 	for (u32 i = header->data_offset; i < file_content.size; i += 4) {
 		u8 blue = file_content.data[i];
 		u8 green = file_content.data[i + 1];
@@ -82,24 +105,30 @@ int main(int argc, char **argv)
 			printf("found: %u\n", i);
 		}
 	}
+	// u8 *pixels = (u8*)file_content.data;
 	// u32 msg_len_pos = 4074562 + 4;
-	u32 msg_len_pos = 48290162 + 4;
-	u32 msg_len = pixels[msg_len_pos] + pixels[msg_len_pos + 2];
-	printf("len: %u\n", msg_len);
+	// u32 msg_len_pos = 48290162 + 4;
+	// u32 msg_len = pixels[msg_len_pos] + pixels[msg_len_pos + 2];
+	// printf("len: %u\n", msg_len);
 
-	u32 pos = 48257946 + 8;
-	u32 pixel_msg_len = (msg_len + 2) / 3;
-	for (u32 i = 0; i < pixel_msg_len; i++) {
-		write(STDOUT_FILENO, pixels + pos, 1);
-		write(STDOUT_FILENO, pixels + pos + 1, 1);
-		write(STDOUT_FILENO, pixels + pos + 2, 1);
-		if (i % 6 == 5) {
-			pos -= header->width * 4;
-			pos -= 5 * 4;
-		} else {
-			pos += 1 * 4;
-		}
-	}
+	// u32 pos = 48257946 + 8;
+	// u32 pixel_msg_len = (msg_len + 2) / 3;
+	// for (u32 i = 0; i < pixel_msg_len; i++) {
+	// 	write(STDOUT_FILENO, pixels + pos, 1);
+	// 	write(STDOUT_FILENO, pixels + pos + 1, 1);
+	// 	write(STDOUT_FILENO, pixels + pos + 2, 1);
+	// 	if (i % 6 == 5) {
+	// 		pos -= header->width * 4;
+	// 		pos -= 5 * 4;
+	// 	} else {
+	// 		pos += 1 * 4;
+	// 	}
+	// }
+	struct message_info msg_info;
+	msg_info.pixels = (u8*)file_content.data;
+	msg_info.msg_len = 396; // chars
+	msg_info.msg_start = 48257946 + 8;
+	msg_info.width = header->width;
+	print_msg(msg_info);
 	return 0;
 }
-
