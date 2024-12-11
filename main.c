@@ -63,10 +63,11 @@ struct message_info {
 	u32 width;
 };
 
-// struct message_info get_msg_info() {
+// struct message_info get_msg_info(u32 header_pos, struct file_content content, ) {
 	// maybe juts take position of the header (finding header is the most complex part)
 // } 
 
+// TODO: optimize LAST (only 510 chars max)
 void print_msg(struct message_info msg_info) {
 	u32 pos = msg_info.msg_start;
 	u32 chars_read = 0;
@@ -125,10 +126,12 @@ int main(int argc, char **argv)
 	// 	}
 	// }
 	struct message_info msg_info;
+	u32 header_start = 48290138;
+	u32 msg_len_pos = header_start + 7 * 4;
 	msg_info.pixels = (u8*)file_content.data;
-	msg_info.msg_len = 396; // chars
-	msg_info.msg_start = 48257946 + 8;
+	msg_info.msg_len = msg_info.pixels[msg_len_pos] + msg_info.pixels[msg_len_pos + 2];
 	msg_info.width = header->width;
+	msg_info.msg_start = header_start - header->width * 2 * 4 + 2 * 4;
 	print_msg(msg_info);
 	return 0;
 }
