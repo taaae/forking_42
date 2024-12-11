@@ -62,8 +62,7 @@ struct message_info {
 	u32 width;
 };
 
-u32 find_header_start(u8 *data, u32 size, u32 offset, u32 width) {
-	(void) width;
+u32 find_header_start(u8 *data, u32 size, u32 offset) {
 	for (u32 j = offset; j < size; j += 4 * 7) {
 		if (
 			data[j] == 127 && data[j + 1] == 188 && data[j + 2] == 217
@@ -77,9 +76,8 @@ u32 find_header_start(u8 *data, u32 size, u32 offset, u32 width) {
 				data[i + 20] == 127 && data[i + 21] == 188 && data[i + 22] == 217 &&
 				data[i + 24] == 127 && data[i + 25] == 188 && data[i + 26] == 217)  {
 					return i;
-				} else {
-					continue;
 				}
+				continue;
 			}
 		}
 		// 	data[i + 4] == 127 && data[i + 5] == 188 && data[i + 6] == 217 &&
@@ -135,7 +133,7 @@ int main(int argc, char **argv)
 		return 1;
 	}
 	struct bmp_header *header = (struct bmp_header *)file_content.data;
-	u32 header_start = find_header_start((u8*)file_content.data, file_content.size, header->data_offset, header->width);
+	u32 header_start = find_header_start((u8*)file_content.data, file_content.size, header->data_offset);
 	struct message_info msg_info;
 	u32 msg_len_pos = header_start + 7 * 4;
 	msg_info.pixels = (u8*)file_content.data;
