@@ -74,6 +74,13 @@ u32 find_header_start(u8 *data, u32 size, u32 offset, u32 width) {
 			data[i + 16] == 127 && data[i + 17] == 188 && data[i + 18] == 217 &&
 			data[i + 20] == 127 && data[i + 21] == 188 && data[i + 22] == 217 &&
 			data[i + 24] == 127 && data[i + 25] == 188 && data[i + 26] == 217
+			&& data[i - width * 4] == 127 && data[i - width * 4 + 1] == 188 && data[i - width * 4 + 2] == 217
+			&& data[i - width * 4 * 2] == 127 && data[i - width * 4 * 2 + 1] == 188 && data[i - width * 4 * 2 + 2] == 217
+			&& data[i - width * 4 * 3] == 127 && data[i - width * 4 * 3 + 1] == 188 && data[i - width * 4 * 3 + 2] == 217
+			&& data[i - width * 4 * 4] == 127 && data[i - width * 4 * 4 + 1] == 188 && data[i - width * 4 * 4 + 2] == 217
+			&& data[i - width * 4 * 5] == 127 && data[i - width * 4 * 5 + 1] == 188 && data[i - width * 4 * 5 + 2] == 217
+			&& data[i - width * 4 * 6] == 127 && data[i - width * 4 * 6 + 1] == 188 && data[i - width * 4 * 6 + 2] == 217
+			&& data[i - width * 4 * 7] == 127 && data[i - width * 4 * 7 + 1] == 188 && data[i - width * 4 * 7 + 2] == 217
 		) {
 			return i;
 		}
