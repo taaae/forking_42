@@ -17,32 +17,32 @@ typedef unsigned long u64;
 struct bmp_header
 {
 	// Note: header
-	i8  signature[2]; // should equal to "BM"
+	i8 signature[2]; // should equal to "BM"
 	u32 file_size;
 	u32 unused_0;
 	u32 data_offset;
 
 	// Note: info header
 	u32 info_header_size;
-	u32 width; // in px
-	u32 height; // in px
-	u16 number_of_planes; // should be 1
-	u16 bit_per_pixel; // 1, 4, 8, 16, 24 or 32
-	u32 compression_type; // should be 0
+	u32 width;				   // in px
+	u32 height;				   // in px
+	u16 number_of_planes;	   // should be 1
+	u16 bit_per_pixel;		   // 1, 4, 8, 16, 24 or 32
+	u32 compression_type;	   // should be 0
 	u32 compressed_image_size; // should be 0
-	// Note: there are more stuff there but it is not important here
+							   // Note: there are more stuff there but it is not important here
 };
 
 struct file_content
 {
-	i8*   data;
-	u32   size;
+	i8 *data;
+	u32 size;
 };
 
-struct file_content   read_entire_file(char* filename)
+struct file_content read_entire_file(char *filename)
 {
-	char* file_data = 0;
-	unsigned long	file_size = 0;
+	char *file_data = 0;
+	unsigned long file_size = 0;
 	int input_file_fd = open(filename, O_RDONLY);
 	if (input_file_fd >= 0)
 	{
@@ -55,7 +55,7 @@ struct file_content   read_entire_file(char* filename)
 	return (struct file_content){file_data, file_size};
 }
 
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
 	if (argc != 2)
 	{
@@ -68,7 +68,27 @@ int main(int argc, char** argv)
 		PRINT_ERROR("Failed to read file\n");
 		return 1;
 	}
-	struct bmp_header* header = (struct bmp_header*) file_content.data;
+	struct bmp_header *header = (struct bmp_header *)file_content.data;
 	printf("signature: %.2s\nfile_size: %u\ndata_offset: %u\ninfo_header_size: %u\nwidth: %u\nheight: %u\nplanes: %i\nbit_per_px: %i\ncompression_type: %u\ncompression_size: %u\n", header->signature, header->file_size, header->data_offset, header->info_header_size, header->width, header->height, header->number_of_planes, header->bit_per_pixel, header->compression_type, header->compressed_image_size);
+	// i8 *pixels = file_content.data + header->data_offset;
+	u8 *pixels = (u8*)file_content.data;
+	// for (u32 i = header->data_offset; i < file_content.size; i += 4) {
+	// 	u8 blue = file_content.data[i];
+	// 	u8 green = file_content.data[i + 1];
+	// 	u8 red = file_content.data[i + 2];
+	// 	if (blue == 127 && green == 188 && red == 217) {
+	// 		printf("found: %u\n", i);
+	// 	}
+	// }
+	u32 msg_len_pos = 4074562 + 4;
+	u32 msg_len = pixels[msg_len_pos] + pixels[msg_len_pos + 2];
+	printf("len: %u\n", msg_len);
+
+	u32 first_pos = 4059178 + 8;
+	for (u32 pos = first_pos; pos < first_pos + msg_len * 4; pos += 1) {
+		if (pixels[pos]) {
+			printf("%c", pixels[pos]);
+		}
+	}
 	return 0;
 }
